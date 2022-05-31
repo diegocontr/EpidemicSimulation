@@ -2,6 +2,9 @@
 Scripts and library for agent-based simulations of compartmental models.
 
 The scripts and code shared here allows to simulate the propagation in different types of networks and contact patterns, considering a compartmental model for COVID in particular, as presented in the pre-print "Impact of the representation of contact data on the evaluation of interventions in infectious diseases simulations" [1]  
+
+![Diagram of the compartmental model for COVID used](COVIDdiag.png)
+
 In addition, non-pharmaceutical interventions (NPI) can be added, which test and isolate individuals following a protocol (individuals with symptoms can be tested and isolated if they test positive, or regular tests can be proactively applied to a portion of the population).
 
 The result is agent simulations where at each timestep each infected individual is evaluated for possible new infections to susceptible neighbors.
