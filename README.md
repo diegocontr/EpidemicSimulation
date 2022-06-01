@@ -25,7 +25,11 @@ The repository includes the files
 * `sistematic_simulations.py` : script to run several runs of simulation under the same condition.  
 * `example_office_simulation.ipynb` : notebook to illustrate the use of the library. 
 
-Extensive documentation on the architecture and use of the code is not included.
 
+ A simplified and non-exhausitive UML visualization of the classes of the program is presented here.
+
+![Animation of the result](images/uml_classes.png)
+
+Extensive documentation on the architecture and use of the code is not included.
 ## Bibliography
 [1] https://www.medrxiv.org/content/10.1101/2022.02.28.22271600v1.
