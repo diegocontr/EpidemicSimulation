@@ -237,14 +237,13 @@ class AgentModel:
         self.Nodes.rnext[i_node] = rnext
         self.Nodes.state[i_node] = product_now
 
-    def set_initial_condition(self, I0, nR0=0):
+    def set_initial_condition(self, I0):
         self.Nodes.reset(I0)
         for inode in self.Nodes.ind_nodes:
             state = self.Nodes.state[inode]
-            #age = self.nodes.biogroup[inode]
             if state != self.healthy_state:
                 rnext, time = self.gR.set_and_rnext(inode)
-                #time= 2/24
+                # time= 2/24
                 self.Nodes.time[inode] = time
                 self.Nodes.rnext[inode] = rnext
                 if state == self.state_after_infection:

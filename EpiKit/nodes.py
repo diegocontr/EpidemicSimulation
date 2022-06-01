@@ -155,7 +155,7 @@ class AgentsNet: #DYN
 
         self.susceptibility = np.array([ self.sigma[i] for i in self.biogroup] )
 
-        self.time = np.zeros((self.N)) + self.tmax+1
+        self.time = np.zeros((self.N)) + self.tmax + 1
         self.rnext = np.zeros((self.N),int) + self.Nr + 1
         self.tested = np.zeros((self.N),int)
         self.symp_tested = np.zeros((self.N),int)
@@ -170,7 +170,7 @@ class AgentsNet: #DYN
 
     def reset_node(self,node):
         self.rnext[node] = self.Nr + 1
-        self.time[node] =  self.tmax +1
+        self.time[node] = self.tmax + 1
         self.state[node] = 'S'
         self.tested[node] = 0
         self.symp_tested[node] = 0
