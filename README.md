@@ -16,10 +16,10 @@ The simulation returns a Result object, which can come in three levels of detail
 The repository includes the folders,
 * `Networks`: contains json files with the networks used, aggregated with different level of detail following [1]
 * `EpiKit`: with the code  defining the simulation of agents
-* `covid_model`: where using classes from EpiKit, we define a model for covid
 
 
 The repository includes the files
+* `covid_model`: where using classes from EpiKit, we define a model for covid
 * `sistematic_simulations.py` : script to run several runs of simulation under the same condition.  
 * `example_office_simulation.ipynb` : notebook to illustrate the use of the library. 
 
