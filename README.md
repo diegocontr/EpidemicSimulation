@@ -21,7 +21,7 @@ The repository includes the folders,
 
 The repository includes the files
 * `sistematic_simulations.py` : script to run several runs of simulation under the same condition.  
-* `single_simulation.ipynb` : notebook to illustrate the use of the library. 
+* `example_office_simulation.ipynb` : notebook to illustrate the use of the library. 
 
 Extensive documentation on the architecture and use of the code is not included.
 
