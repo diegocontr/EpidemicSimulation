@@ -49,7 +49,14 @@ def load_json_dataset(filename):
         Gt = js2['graphs']      
         return Gt,  contact_meta, None , js2['type'] 
 
-
+# #%%
+# {
+#  'type':str,
+#  'metadata': str( pandas.to_json) ,
+#  'graphs':list,
+#  'dt':float,
+#  }
+# #%%
 
 def format_results_out(sim, Lres:list, Params_list:list, level=0):
     if level == 2:
@@ -112,7 +119,42 @@ def format_results_out(sim, Lres:list, Params_list:list, level=0):
             'runs': res_dict,
             'level': level,
             }    
+#%%
+# def format_results_out2(level=0):
+#     if level == 2:
+#         keys_saving = ['biogroup', 'initial_time', 'final_size', '#test', '#qdays', 'R0', 
+#                        'states', 'Gedges', 'Gnodes', 'dict_qtime', 'external_infections', 
+#                        'size(t)', 'quarantined(t)', 'test(t)']
+#         sim_properties =  {'time': 1,
+#                             'states': 1,
+#                               }
+        
+#     elif level == 1:
+#         keys_saving = ['initial_time', 'final_size', '#test', '#qdays',  'R0',
+#                         'Gedges', 'Gnodes', 'dict_qtime', 'external_infections', 
+#                        'size(t)']
+#         sim_properties =  {'time': 1 ,
+#                             'states': 1,
+#                               }
+#     elif level == 0:
+#         keys_saving = [ 'final_size', '#test', '#qdays', 'R0']
+#         sim_properties =  {   }
 
+
+#     res_dict = []
+#     for i in range(1):
+        
+#         test_stat = {k:1 for k in keys_saving}
+#         res_dict.append( test_stat )
+        
+#     return {'Param': 1, 
+#             'sim': sim_properties, 
+#             'runs': res_dict,
+#             'level': level,
+#             }    
+# format_results_out2(level=0)
+
+#%%
 
 
 def struct_to_json_file(filename, struct):

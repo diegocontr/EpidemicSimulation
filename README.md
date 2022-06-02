@@ -1,5 +1,4 @@
 # Epidemic Simulation
-Scripts and library for agent-based simulations of compartmental models.
 
 The scripts and code shared here allows to simulate the propagation in different types of networks and contact patterns, considering a compartmental model for COVID in particular, as presented in the pre-print "Impact of the representation of contact data on the evaluation of interventions in infectious diseases simulations" [1]  
 
@@ -12,6 +11,8 @@ The result is agent simulations where at each timestep each infected individual 
 The simulation returns a Result object, which can come in three levels of detail to choose from, from final size only, number of tests used and total quarantine days for each individual run, to a complete detail of infectious trees of who infected whom at what time, and the detailed status of each node over time.
 
 ![Animation of the result](images/sim_anim.gif)
+
+The networks used are included as compressed json files, and they are described in [this document](NETWORKS.md).
 
 ## Overview of the repository
 
@@ -26,7 +27,7 @@ The repository includes the files
 * `example_office_simulation.ipynb` : notebook to illustrate the use of the library. 
 
 
- A simplified and non-exhausitive UML visualization of the classes of the program is presented here.
+ A simplified and non-exhausitive UML visualization of the classes of the code is presented here.
 
 ![Animation of the result](images/uml_classes.png)
 

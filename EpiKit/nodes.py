@@ -176,8 +176,8 @@ class AgentsNet: #DYN
         self.symp_tested[node] = 0
         self.time_isolated[node] = 0
 
-    def activitytimes(self,t):
-        return self.Graphs.activitytimes(t)
+    def activity_times(self, t):
+        return self.Graphs.activity_times(t)
 
     def neighbors(self,Ii,it,d2):
         #print(dayindex_dataset,it)

@@ -99,7 +99,7 @@ class GraphDataSchool(GraphData):
         super().__init__(dic)
         #self.net_cycle = round(len(self.Gt) * 7/4 )
 
-    def activitytimes(self, t):
+    def activity_times(self, t):
         day = np.array(t % 7, int)
         second = np.array((t % 1)*(3600*24), int)-self.sec0
         cond_day = (day == 0) + (day == 1) + (day == 3) + (day == 4)
@@ -130,7 +130,7 @@ class GraphDataOffice(GraphData):
     def day_to_Gt_ind(self, d):
         return self.index_to_day[d % self.net_cycle]
 
-    def activitytimes(self, t):
+    def activity_times(self, t):
         dt = t[1] - t[0]
         day = np.array(t % 7, int)
         second = np.array(((t % 1)*(3600*24)).round(), int)-self.sec0
@@ -159,7 +159,7 @@ class GraphDataAllDays(GraphData):
     def day_to_Gt_ind(self, d):
         return self.index_to_day[d % self.net_cycle]
 
-    def activitytimes(self, t):
+    def activity_times(self, t):
         day = np.array(t % 7, int)
         second = np.array((t % 1)*(3600*24), int)-self.sec0
         cond_day = (day != 10000.2)
@@ -184,7 +184,7 @@ class GraphDataDays(GraphData):
         self.day_list = day_list
         self.n_workdays = len(day_list)
 
-    def activitytimes(self, t):
+    def activity_times(self, t):
         day = np.array(t % 7, int)
         second = np.array((t % 1)*(3600*24), int)-self.sec0
         cond_day = 0*day

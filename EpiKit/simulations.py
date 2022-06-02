@@ -266,7 +266,7 @@ class AgentModel:
         self.new_ext_inf = self.tmax + 1
 
         wtimes = np.arange(0, 7, self.Nodes.dt)
-        wactivitytime, wtindex, wday2 = self.Nodes.activitytimes(wtimes + time_0)
+        wactivitytime, wtindex, wday2 = self.Nodes.activity_times(wtimes + time_0)
         self.wtimes_noactivity = wtimes[wactivitytime == False]
 
     def check_introductions(self, t):
@@ -327,7 +327,7 @@ class AgentModel:
 
         self.Test.reset(sim=self)
 
-        activitytime, tindex, dayindex_in_graph = self.Nodes.activitytimes(self.times_displaced)
+        activitytime, tindex, dayindex_in_graph = self.Nodes.activity_times(self.times_displaced)
         Out = Result(self, times, jump_hours)
         jump = Out.jump
 
