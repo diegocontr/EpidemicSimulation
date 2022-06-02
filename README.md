@@ -33,4 +33,4 @@ The repository includes the files
 
 Extensive documentation on the architecture and use of the code is not included.
 ## Bibliography
-[1] https://www.medrxiv.org/content/10.1101/2022.02.28.22271600v1.
+[1] Contreras, D. A., Colosi, E., Bassignana, G., Colizza, V., & Barrat, A. (2022).[Impact of the representation of contact data on the evaluation of interventions in infectious diseases simulations. ](https://www.medrxiv.org/content/10.1101/2022.02.28.22271600v1) medRxiv.
