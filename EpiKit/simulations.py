@@ -173,13 +173,42 @@ class NoTest:
     def counting_qteacher(self):
         return 0, 0
 
+
+
 class AgentModel:
+
     def __init__(self, Graphs, Param:dict, React:list,
-                 S:list, S_inf:np.array, N:int, tmax: float):
+                 S:list, S_inf:np.array, S_dict:dict, N:int, tmax: float):
+        '''
+        AgentModel integrate all components of simulations.
+
+        Parameters
+        ----------
+        Graphs : GraphData
+            GraphData instance with the network to use.
+        Param : dict
+            dictionary with parameters name as key, and its values.
+        React : list
+            list of Reaction object describing possible transitions.
+        S : list
+            list of possible states.
+        S_inf : np.array
+            relative infectiousness for state and biogroup.
+        S_dict : dict
+            dictionary of key states. It must have the keys 'healthy',
+            'after_infection', and 'recovered'.
+            
+        N : int
+            population number of agents.
+        tmax : float
+            maximum time the simulation can reach.
+
+        '''
         self.S_inf = S_inf
         self.S = S
-        self.healthy_state = 'S'
-        self.state_after_infection = 'E'
+        self.healthy_state = S_dict['healthy']
+        self.state_after_infection =  S_dict['after_infection']
+        self.recovered_state =  S_dict['recovered']
         self.tmax = tmax
         self.N = N
         self.Ns = len(S)
@@ -208,9 +237,27 @@ class AgentModel:
                                                 self.Nr, self.tmax)
 
         self.weekden = Param['weekden']
+        
     def set_test_protocol(self, Test):
         self.Test = Test
+        
     def find_transmissions(self, i_infected: int, t:float, it:int, dayindex_dataset:int):
+        '''
+        Search for healthy neighbors of i_infected and evaluate if they should
+        get infected.
+
+        Parameters
+        ----------
+        i_infected : int
+            Index of infected node.
+        t : float
+            Current time.
+        it : int
+            Index of the current time.
+        dayindex_dataset : int
+            Index of the day in the dataset.
+
+        '''
         for iS in self.Nodes.neighbors(i_infected, it, dayindex_dataset):
             # print('>>',iS)
             if self.Nodes.state[iS] == self.healthy_state:
@@ -220,7 +267,23 @@ class AgentModel:
                         self.set_infection(i_infected, iS, t)  # ,it,dayindex_dataset)
 
 
-    def set_infection(self, i_infected:int, j_susceptible, t):
+    def set_infection(self, i_infected:int, j_susceptible:int, t:float):
+        '''
+        Change the state of the node i_susceptible to the product of the first 
+        reaction in set_of_reactions object.
+        Updates the infection tree accordingly.
+
+        Parameters
+        ----------
+        i_infected : int
+            Index of infected node.
+        j_susceptible : int
+            Inex of the node to be infected.
+        t : float
+            Time of the infection.
+
+        '''
+        
         if i_infected == i_infected:
             self.Nodes.infection_tree.add_edge(i_infected, j_susceptible, time=t)
             self.Nodes.infection_tree.nodes[j_susceptible]['time'] = t
@@ -231,7 +294,7 @@ class AgentModel:
         self.Nodes.state[j_susceptible] = product
         self.OutResult['size'] += 1
 
-    def change(self, i_node, rnow, t):
+    def change(self, i_node: int, rnow:int, t:float):
         product_now, rnext, time_next = self.gR.product_and_rnext(i_node, rnow)
         self.Nodes.time[i_node] = t + time_next
         self.Nodes.rnext[i_node] = rnext
@@ -261,15 +324,34 @@ class AgentModel:
             self.Nodes.time[inode] = time
             self.Nodes.rnext[inode] = rnext
 
-    def set_introductions(self, time_0):
+    def set_introductions(self, time_0: float):
+        '''
+        Creates the memeber self.wtime_noactivity to introduce new infections.
+
+        Parameters
+        ----------
+        time_0 : float
+            Initial time of the simulation.
+
+        '''
         self.ext_infection_time = 0  # 7*self.weekden #old simulations
         self.new_ext_inf = self.tmax + 1
 
         wtimes = np.arange(0, 7, self.Nodes.dt)
-        wactivitytime, wtindex, wday2 = self.Nodes.activity_times(wtimes + time_0)
-        self.wtimes_noactivity = wtimes[wactivitytime == False]
+        wact, wtindex, wday2 = self.Nodes.activity_times(wtimes + time_0)
+        self.wtimes_noactivity = wtimes[~wact]
 
-    def check_introductions(self, t):
+    def check_introductions(self, t: float):
+        '''
+        Check if at this time corresponds to introduce a new infection. 
+        If so, choses a new healthy node to infect.
+
+        Parameters
+        ----------
+        t : float
+            Current time in the simulation.
+
+        '''
         if t >= self.ext_infection_time:
             self.ext_infection_time += self.weekden * 7
             itime = nprm.choice(self.wtimes_noactivity, 1)[0]
@@ -294,14 +376,24 @@ class AgentModel:
 # TO CHECK:
 # if I shouldn't first add the infectious to a list and execute them later
 
-    def solve(self, set_condition, jump_hours=24.0 ):
-        """
+    def solve(self, set_condition, jump_hours=24.0 ) -> Result:
+        '''
         Function perform the time discrete simulation.
-        :param set_condition: function or array to prescribe the initial state 
-                              of the nodes
-        :param jump_hours: frequency in hours when to save the state of the system
-        :return: Result object
-        """
+
+        Parameters
+        ----------
+        set_condition : function or np.array 
+            Prescribe the initial state  of the nodes.
+        jump_hours : TYPE, optional
+            Frequency in hours when to save the state of the system. 
+            The default is 24.0.
+
+        Returns
+        -------
+        Out : Result
+            Data of the simulation result.
+
+        '''
         # pick a random time
         times = np.arange(0, self.tmax + self.Nodes.dt, self.Nodes.dt)
         if self.Nodes.Graphs.net_cycle > 0:
@@ -348,11 +440,35 @@ class AgentModel:
         Out.finish(self)            
         return Out
 
-    def evol(self, t, activity, dayindex, it, to_continue):
+    def evol(self, t:float, activity:bool, dayindex:int, it:int, to_continue:bool):
+        '''
+        Actions to take place in each time step. Namely,
+        - Check for new infections
+        - Apply testing protocols
+        - Check if it is time to move an infected node to the next 
+          stage of their infections.
+        - Check for introductions of new infections
+
+
+        Parameters
+        ----------
+        t : float
+            Current time
+        activity : bool
+            If contacts are active.
+        dayindex : int
+            Index of networks in the dataset.
+        it : int
+            Index of current time.
+        to_continue : bool
+            If True, only new introductions are evaluated.
+
+        '''
 
         if to_continue and activity:
-            for inode in self.Nodes.ind_nodes[(
-                                                      self.Nodes.state != 'R') & (self.Nodes.state != 'S')]:
+            for inode in self.Nodes.ind_nodes[
+                              (self.Nodes.state != self.healthy_state) &
+                              (self.Nodes.state != self.recovered_state)]:
                 state = self.Nodes.state[inode]
                 category = self.Nodes.biogroup[inode]
                 if self.Nodes.Dict_inf[category][state]:

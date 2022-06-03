@@ -58,24 +58,31 @@ def load_json_dataset(filename):
 #  }
 # #%%
 
-def format_results_out(sim, Lres:list, Params_list:list, level=0):
+def format_results_out(sim, Lres:list, Params_list:list, level=0, test = True):
+
     if level == 2:
-        keys_saving = ['biogroup', 'initial_time', 'final_size', '#test', '#qdays', 'R0', 
-                       'states', 'Gedges', 'Gnodes', 'dict_qtime', 'external_infections', 
-                       'size(t)', 'quarantined(t)', 'test(t)']
+        keys_saving = ['biogroup', 'initial_time', 'final_size',  'R0', 
+                       'states', 'Gedges', 'Gnodes', 'external_infections', 
+                       'size(t)']
+        if test:
+            keys_saving += ['#test', '#qdays', 'quarantined(t)', 'test(t)',  'dict_qtime']
         sim_properties =  {'time': Lres[0].agg_in_time['time'].tolist() ,
                             'states': Lres[0].S,
                               }
         
     elif level == 1:
-        keys_saving = ['initial_time', 'final_size', '#test', '#qdays',  'R0',
+        keys_saving = ['initial_time', 'final_size',   'R0',
                         'Gedges', 'Gnodes', 'dict_qtime', 'external_infections', 
                        'size(t)']
+        if test:
+            keys_saving += ['#test', '#qdays', 'dict_qtime']  
         sim_properties =  {'time': Lres[0].agg_in_time['time'].tolist() ,
                             'states': Lres[0].S,
                               }
     elif level == 0:
-        keys_saving = [ 'final_size', '#test', '#qdays', 'R0']
+        keys_saving = [ 'final_size', 'R0']
+        if test:
+            keys_saving += ['#test', '#qdays']  
         sim_properties =  {   }
 
     joinParams = {}

@@ -8,6 +8,7 @@ Created on Tue May 31 06:48:21 2022
 import numpy as np
 import EpiKit as epi
 import dictfit
+
 S         =            ['S',  'E',  'Ip',  'Ic',  'Isc', 'Rp', 'R']
 dict_of_rel_inf   = {
     'adult': np.array([0, 0, 0.55, 1.00, 0.55, 0, 0, ]),
@@ -31,7 +32,7 @@ def beta_from_R0(R0, data, net, r_period, weekdays, generation=1):
         A,f = DictFit[1]['DYN']
     return -np.log( 1 - R0/A)/ (f  /(60*24) )
 
-def get_covid_model(beta,ParamSim, data):
+def get_disease_model(beta,ParamSim, data):
     if ParamSim['vax'] == '75p':
         ParamVax = {'f_sigma': 1-0.73,
                     'f_c': 1-0.70,
@@ -48,7 +49,12 @@ def get_covid_model(beta,ParamSim, data):
               [dict_of_rel_inf['adult'],
                dict_of_rel_inf['adult'] * ParamVax['f_r']])
     elif data == 'school':
-        relative_infectiousness = np.array(
+        relative_infectiousness = np.a    Dict_states = {'healthy':'S',
+                           'after_infection':'E',
+                           'recovered':'R'}
+
+
+            return Param, React, S_inf,Dict_statesrray(
               [dict_of_rel_inf['children'],
                dict_of_rel_inf['adult'] * ParamVax['f_r']])        
     S_inf = relative_infectiousness * beta 
@@ -79,15 +85,20 @@ def get_covid_model(beta,ParamSim, data):
               epi.Reaction('Rp',  'R',  Param['mu_R'],  gamma = Param['g_mu_R'] ),] #5
 
 
-    return Param, React, S_inf
+    Dict_states = {'healthy':'S',
+                   'after_infection':'E',
+                   'recovered':'R'}
 
 
-    S         =            ['S',  'E',  'Ip',  'Ic',  'Isc', 'Rp', 'R']
-    S_inf0    = np.array([ [ 0,    0,0.55*0.63, 0.63,0.55*0.63,  0,   0, ],
-                           [ 0,    0,   0.55,   1.00,   0.55,    0,   0, ],
-                           ])
-    SIGMA_STUD = 0.5
-    PROD_DET = 0.3
+    return Param, React, S_inf,Dict_states
+
+
+    # S         =            ['S',  'E',  'Ip',  'Ic',  'Isc', 'Rp', 'R']
+    # S_inf0    = np.array([ [ 0,    0,0.55*0.63, 0.63,0.55*0.63,  0,   0, ],
+    #                        [ 0,    0,   0.55,   1.00,   0.55,    0,   0, ],
+    #                        ])
+    # SIGMA_STUD = 0.5
+    # PROD_DET = 0.3
 # Param_out, React, Sinf = get_covid_model(beta,Param)
 
 
