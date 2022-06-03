@@ -49,14 +49,10 @@ def get_disease_model(beta,ParamSim, data):
               [dict_of_rel_inf['adult'],
                dict_of_rel_inf['adult'] * ParamVax['f_r']])
     elif data == 'school':
-        relative_infectiousness = np.a    Dict_states = {'healthy':'S',
-                           'after_infection':'E',
-                           'recovered':'R'}
-
-
-            return Param, React, S_inf,Dict_statesrray(
+        relative_infectiousness = np.array(
               [dict_of_rel_inf['children'],
                dict_of_rel_inf['adult'] * ParamVax['f_r']])        
+  
     S_inf = relative_infectiousness * beta 
     r_period = ParamSim['r_period'] 
     Param = {'epsilon' : 1/4,
