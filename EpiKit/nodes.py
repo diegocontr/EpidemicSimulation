@@ -13,69 +13,6 @@ import networkx as nx
 
 
 
-#from statistics import mode
-
-
-
-class Agents_lite:
-    def __init__(self,Nodes,Nt,Nq):
-        self.S = Nodes.S
-        self.N = Nodes.N
-        self.Ns = Nodes.Ns
-        self.Nr = Nodes.Nr
-        self.ind_nodes = Nodes.ind_nodes
-        self.infection_tree = Nodes.infection_tree
-        self.node_category = Nodes.node_category
-        self.nclass_teacher = Nodes.nodes_category_teacher
-        self.biogroup = Nodes.biogroup
-
-        self.symp_tested = Nodes.symp_tested
-        self.tested = Nodes.tested
-        self.time_isolated = Nodes.time_isolated
-        self.time_detected = Nodes.time_detected
-        self.days_quarantine = Nodes.days_quarantine
-        self.tmax = Nodes.tmax
-
-        self.Qcount = Nodes.Qcount
-
-        self.number_of_tests = Nt
-        self.quarantines_per_biogroup = Nq
-        self.ExtInf = Nodes.ExtInf
-        #self.external_infections = nodes.external_infections
-
-
-class Agents:
-    def __init__(self,S, S_inf, N, Nr, tmax):
-        self.S = S
-        self.Sinf = S_inf
-        self.N = N
-        self.Ns = len(S)
-        self.Nr = Nr
-
-        self.Sdict = {self.S[i]:i for i in range(self.Ns) }
-        self.Dict_inf = [ {self.S[i]:self.Sinf[j][i] for i in range(self.Ns) }
-                          for j in range(self.Sinf.shape[0]) ]
-
-        self.ind_nodes = np.arange(self.N)
-        #initial = nprm.choice(self.ind_nodes, I0 )
-        #self.state = np.array(['S' if not( i in initial) else 'E' for i in range(N)],dtype='<U4')
-
-        self.state = np.array(['S' for i in range(N)],dtype='<U4')
-        #self.state[I0] = 'E'
-
-        self.time = np.zeros((N)) + tmax+1
-        self.rnext = np.zeros((N),int) + self.Nr
-        self.tmax = tmax
-
-        self.infection_tree =nx.DiGraph()
-        self.infection_tree.add_nodes_from( self.ind_nodes  )
-
-    def count_states(self):
-         return np.array([ np.count_nonzero(self.state==s) for s in self.S ])
-
-
-
-
 class AgentsNet: #DYN
     def __init__(self,Graphs,S, S_inf, sigma, Nr,tmax, precal=True):
 
@@ -218,12 +155,7 @@ class Agents_TemporalNetwork(AgentsNet):
         return  1 - np.exp( - sigma_S * f_I * w * self.dt0)
        # return   sigma_S * f_I * w * self.dt0
       # return  1 - np.power(1-sigma_S*f_I , w * self.dt0)
-# #%%
-# p = 0.1
-# x = np.linspace(0,10,100)
-# plt.plot(x,p*x)
-# plt.plot(x, 1 - np.power(1-p, x))
-# #%%
+
 
 class Agents_DailyNetworks(AgentsNet):
     def __init__(self,Graphs,S, S_inf, sigma, Nr,tmax):

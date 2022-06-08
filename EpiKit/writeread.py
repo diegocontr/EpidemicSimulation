@@ -72,7 +72,7 @@ def format_results_out(sim, Lres:list, Params_list:list, level=0, test = True):
         
     elif level == 1:
         keys_saving = ['initial_time', 'final_size',   'R0',
-                        'Gedges', 'Gnodes', 'dict_qtime', 'external_infections', 
+                        'Gedges', 'Gnodes', 'external_infections', 
                        'size(t)']
         if test:
             keys_saving += ['#test', '#qdays', 'dict_qtime']  

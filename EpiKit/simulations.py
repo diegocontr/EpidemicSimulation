@@ -10,17 +10,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 import numpy.random as nprm
 
-from .nodes import AgentsNet, Agents_TemporalNetwork, Agents_lite, Agents_DailyNetworks, Agents_ContactMatrix
+from .nodes import AgentsNet, Agents_TemporalNetwork, Agents_DailyNetworks, Agents_ContactMatrix
 
 
 
 class Result:
-    def __init__(self,sim,times,jump_hours):
+    def __init__(self,sim,times,jump_hours, saving_level=2):
+        self.saving_level = saving_level
+        self.saving_test = True
 
         self.jump = int(jump_hours * (3600 // sim.Nodes.dt_sec))  # hours * ( )
         self.times_out = times[::self.jump]
         nodes_zeros = np.zeros((self.times_out.size, sim.N), dtype='<U4')
         agg_zeros = np.zeros(self.times_out.size, int)
+
 
         self.t_index = 0
         
@@ -44,9 +47,9 @@ class Result:
        # dqt = [sum([(self.quarantines_per_biogroup[a][Q]) for Q in ['Qw', 'Qpi', 'Qi']])
         for k,val in zip(['time','size','#test','#qdays'], (t,size,nt, sum(qt) )):
             self.agg_in_time[k][self.t_index] = val
-        
-        self.state_history[self.t_index] = sim.Nodes.state.copy()
-        self.quarantined_history[self.t_index] = sim.Nodes.qnodes.copy()
+        if self.saving_level >0:
+            self.state_history[self.t_index] = sim.Nodes.state.copy()
+            self.quarantined_history[self.t_index] = sim.Nodes.qnodes.copy()
         
         self.t_index += 1 
         
@@ -54,10 +57,12 @@ class Result:
         self.OutResult = sim.OutResult
         self.external_infections = sim.Nodes.ExtInf
         self.infection_tree = sim.Nodes.infection_tree
-        self.agg_state_in_time = self.evolution_all()
-        self.number_of_tests = self.agg_in_time['#test'][-1]
-        self.days_in_quarantine = self.agg_in_time['#qdays'][-1]
-        self.quarantines_per_biogroup = sim.Test.quarantines_per_biogroup
+        nt, qt = sim.Test.get_test_quarantine() 
+        self.number_of_tests = nt #self.agg_in_time['#test'][-1]
+        self.days_in_quarantine = sum(qt) #self.agg_in_time['#qdays'][-1]        
+        if self.saving_level >1:
+            self.agg_state_in_time = self.evolution_all()
+            self.quarantines_per_biogroup = sim.Test.quarantines_per_biogroup
         
     def plot_t(self):
         tg = self.times_out
@@ -187,21 +192,21 @@ class AgentModel:
         Graphs : GraphData
             GraphData instance with the network to use.
         Param : dict
-            dictionary with parameters name as key, and its values.
+            Dictionary with parameters name as key, and its values.
+            It requieres the keys: 'beta' and 'sigma'.
         React : list
-            list of Reaction object describing possible transitions.
+            List of Reaction object describing possible transitions.
         S : list
-            list of possible states.
+            List of possible states.
         S_inf : np.array
-            relative infectiousness for state and biogroup.
+            Relative infectiousness for state and biogroup.
         S_dict : dict
-            dictionary of key states. It must have the keys 'healthy',
+            Dictionary of key states. It must have the keys 'healthy',
             'after_infection', and 'recovered'.
-            
         N : int
-            population number of agents.
+            Population number of agents.
         tmax : float
-            maximum time the simulation can reach.
+            Maximum time the simulation can reach.
 
         '''
         self.S_inf = S_inf
@@ -210,12 +215,14 @@ class AgentModel:
         self.state_after_infection =  S_dict['after_infection']
         self.recovered_state =  S_dict['recovered']
         self.tmax = tmax
+        self.stop = 'at_tmax' # []
         self.N = N
         self.Ns = len(S)
         self.Nr = len(React)
         self.gR = Set_of_Reactions(self, React, S, tmax)
         self.vax_selection = False
         self.Test = NoTest()
+        self.beta = Param['beta']
        # self.OutResult = {'time0': 0}
 
         if Graphs.type == 'daily':
@@ -240,6 +247,22 @@ class AgentModel:
         
     def set_test_protocol(self, Test):
         self.Test = Test
+        
+    def change_beta(self,beta_new:float):
+        '''
+        Change the value of the infection rate beta to a new value.
+
+        Parameters
+        ----------
+        beta_new : float
+            New value of the infection rate beta
+
+        '''
+        beta_old = self.beta
+        self.S_inf = self.S_inf * beta_new/ beta_old
+        self.Nodes.Dict_inf = [ {self.S[i]:self.S_inf[j][i] for i in range(self.Ns) }
+                          for j in range(self.S_inf.shape[0]) ]
+        self.beta = beta_new
         
     def find_transmissions(self, i_infected: int, t:float, it:int, dayindex_dataset:int):
         '''
@@ -295,12 +318,42 @@ class AgentModel:
         self.OutResult['size'] += 1
 
     def change(self, i_node: int, rnow:int, t:float):
+        '''
+        Change the state of a node to the product of a reaction.
+
+        Parameters
+        ----------
+        i_node : int
+            index of the node to change.
+        rnow : int
+            index of the reaction which produces the new state.
+        t : float
+            Current time.
+
+        '''
         product_now, rnext, time_next = self.gR.product_and_rnext(i_node, rnow)
         self.Nodes.time[i_node] = t + time_next
         self.Nodes.rnext[i_node] = rnext
         self.Nodes.state[i_node] = product_now
 
     def set_initial_condition(self, I0):
+        '''
+        Function that takes a numpy array and assign the state prescribed to
+        each node. This functions first reset the nodes, and then go through
+        each node assigning the state, and time of transition. The infection 
+        tree and the member Nodes.ExtInf is updated with the nodes in the 
+        state_after_infection.
+
+        Parameters
+        ----------
+        I0 : np.array
+            Array with the state to assign to each node.
+
+        Returns
+        -------
+        None.
+
+        '''
         self.Nodes.reset(I0)
         for inode in self.Nodes.ind_nodes:
             state = self.Nodes.state[inode]
@@ -351,7 +404,7 @@ class AgentModel:
         t : float
             Current time in the simulation.
 
-        '''
+        '''    
         if t >= self.ext_infection_time:
             self.ext_infection_time += self.weekden * 7
             itime = nprm.choice(self.wtimes_noactivity, 1)[0]
@@ -373,10 +426,27 @@ class AgentModel:
                 self.Nodes.ExtInf.append(inode)
             else:
                 self.ext_infection_time = self.tmax + 1
-# TO CHECK:
-# if I shouldn't first add the infectious to a list and execute them later
 
-    def solve(self, set_condition, jump_hours=24.0 ) -> Result:
+    def check_if_stop(self):
+        '''
+        Using the member value self.stop, it evaluates if the simulation should
+        stop.
+
+        Returns
+        -------
+        bool
+            True if the condition to end the simulation is satisfied.
+
+        '''
+        if self.stop == 'at_tmax':
+            return False
+        elif self.stop == 'no_trans':
+            return self.Nodes.time.min() > self.tmax     
+        elif self.stop == 'end_gen1':  
+            inode = self.Nodes.ExtInf[0]
+            return self.Nodes.state[inode] == self.recovered_state 
+            
+    def solve(self, set_condition, jump_hours:float=24.0, saving_level:int = 2 ) -> Result:
         '''
         Function perform the time discrete simulation.
 
@@ -384,10 +454,12 @@ class AgentModel:
         ----------
         set_condition : function or np.array 
             Prescribe the initial state  of the nodes.
-        jump_hours : TYPE, optional
+        jump_hours : float, optional
             Frequency in hours when to save the state of the system. 
             The default is 24.0.
-
+        saving_level : int, optional    
+            Level of detail to save. 
+            The default is 2.  
         Returns
         -------
         Out : Result
@@ -412,7 +484,7 @@ class AgentModel:
         elif isinstance(set_condition, np.array) :
             self.set_initial_condition(set_condition)  
         else:
-            raise(TypeError,'Not a valid type for <set_condition> parameter. It must be a function or an numpy array.')
+            raise TypeError('Not a valid type for <set_condition> parameter. It must be a function or an numpy array.')
 
         self.OutResult = {'size': self.Nodes.ind_nodes[self.Nodes.state == self.state_after_infection].size,
                           'time0': time_0}
@@ -420,7 +492,7 @@ class AgentModel:
         self.Test.reset(sim=self)
 
         activitytime, tindex, dayindex_in_graph = self.Nodes.activity_times(self.times_displaced)
-        Out = Result(self, times, jump_hours)
+        Out = Result(self, times, jump_hours, saving_level = saving_level)
         jump = Out.jump
 
         to_continue = True
@@ -436,6 +508,9 @@ class AgentModel:
                     to_continue = False
                 else:
                     to_continue = True
+                    
+                if self.check_if_stop():
+                    break
                     
         Out.finish(self)            
         return Out
@@ -461,7 +536,7 @@ class AgentModel:
         it : int
             Index of current time.
         to_continue : bool
-            If True, only new introductions are evaluated.
+            If True, only new introductions and testing are evaluated.
 
         '''
 
@@ -486,4 +561,3 @@ class AgentModel:
 
         if self.weekden != 0:
             self.check_introductions(t)
-
