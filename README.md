@@ -49,4 +49,4 @@ And the suplemental libraries
 
 
 ## Bibliography
-[1] Contreras, D. A., Colosi, E., Bassignana, G., Colizza, V., & Barrat, A. (2022). Impact of contact data resolution on the evaluation of interventions in mathematical models of infectious diseases. Journal of the Royal Society Interface, 19(191), 20220164.
+[1] Contreras, D. A., Colosi, E., Bassignana, G., Colizza, V., & Barrat, A. (2022). [Impact of contact data resolution on the evaluation of interventions in mathematical models of infectious diseases. Journal of the Royal Society Interface, 19(191), 20220164.](https://royalsocietypublishing.org/doi/full/10.1098/rsif.2022.0164)
