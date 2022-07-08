@@ -52,5 +52,4 @@ PLOS ONE 6(8): e23176 (2011)
 * [4] R. Mastrandrea, J. Fournet, A. Barrat,
 Contact patterns in a high school: a comparison between data collected using wearable sensors, contact diaries and friendship surveys.
 PLoS ONE 10(9): e0136497 (2015)
-* [5] [Impact of the representation of contact data on the evaluation of interventions in infectious diseases simulations. ](https://www.medrxiv.org/content/10.1101/2022.02.28.22271600v1) 
-Contreras, D. A., Colosi, E., Bassignana, G., Colizza, V., & Barrat, A. medRxiv, (2022). 
+* [5]  Contreras, D. A., Colosi, E., Bassignana, G., Colizza, V., & Barrat, A. (2022). [Impact of contact data resolution on the evaluation of interventions in mathematical models of infectious diseases. Journal of the Royal Society Interface, 19(191), 20220164.]
