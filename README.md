@@ -24,7 +24,7 @@ The repository includes the folders,
 
 
 The repository includes the files
-* `covid_model`: where using classes from EpiKit, we define a model for covid
+* `covid_model.py`: where using classes from EpiKit, we define a model for covid
 * `sistematic_simulations.py` : script to run several runs of simulation under the same condition.  
 * `example_office_simulation.ipynb` : notebook to illustrate the use of the library. 
 
@@ -49,4 +49,4 @@ And the suplemental libraries
 
 
 ## Bibliography
-[1] Contreras, D. A., Colosi, E., Bassignana, G., Colizza, V., & Barrat, A. (2022).[Impact of the representation of contact data on the evaluation of interventions in infectious diseases simulations. ](https://www.medrxiv.org/content/10.1101/2022.02.28.22271600v1) medRxiv.
+[1] Contreras, D. A., Colosi, E., Bassignana, G., Colizza, V., & Barrat, A. (2022). Impact of contact data resolution on the evaluation of interventions in mathematical models of infectious diseases. Journal of the Royal Society Interface, 19(191), 20220164.
