@@ -1,9 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr  7 00:50:16 2021
+This part of the code is particularly released under the CRAPL 
+license https://matt.might.net/articles/crapl/
 
-@author: diego
+The implementation of the different tests represents low re-usability code,
+so this part was written with no major consideration on its maintainability
+and re-usability.
+
+The author of this code adheres to the values of open science, and releases 
+this code in the interest of transparency. However, if my code is of interest 
+to you, this part may need to be re-implemented. 
+
+Simulations of epidemics without testing protocols or quarantines do not 
+require this part of the code.
+
 """
 
 import numpy as np
